@@ -63,7 +63,7 @@ struct ContentView: View {
                         Spacer()
                     }
                 }
-                .padding(EdgeInsets(top: -15, leading: 0, bottom: 0, trailing: 0))
+                .padding(EdgeInsets(top: -15, leading: 0, bottom: -10, trailing: 0))
                 List{
                     ForEach(event.indices, id: \.self) { index in
                         ZStack {
@@ -102,44 +102,51 @@ struct ContentView: View {
                                 Spacer()
                             }.cornerRadius(15)
                         }
-                    }
-                }
-                HStack {
-                    Spacer()
-                    VStack {
-                        Image(systemName: "calendar")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 30)
-                        Text("Events")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(Color.black)
-                    }
-                    Spacer()
-                    VStack {
-                        Image(systemName: "tray.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 30)
-                        Text("Clubs")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(Color.black)
-                    }
-                    Spacer()
-                    VStack {
-                        Image(systemName: "person.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 30)
-                        Text("Profile")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(Color.black)
-                        
-                    }
-                    Spacer()
-                }.padding(20)
+                    }.listRowSeparator(.hidden)
+                }.listStyle(.plain)
+                
+                footerView()
             }
             .ignoresSafeArea()
+    }
+}
+
+struct footerView: View {
+    var body: some View {
+        HStack {
+            Spacer()
+            VStack {
+                Image(systemName: "calendar")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 30)
+                Text("Events")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(Color.black)
+            }
+            Spacer()
+            VStack {
+                Image(systemName: "tray.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 30)
+                Text("Clubs")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(Color.black)
+            }
+            Spacer()
+            VStack {
+                Image(systemName: "person.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 30)
+                Text("Profile")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(Color.black)
+                
+            }
+            Spacer()
+        }.padding(20)
     }
 }
 

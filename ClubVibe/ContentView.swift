@@ -6,6 +6,14 @@
 //
 
 import SwiftUI
+
+struct clubcard: Identifiable {
+    var id = UUID()
+    var name: String
+//    var title: String
+    var isliked: Bool
+}
+
 var event = ["art", "tech", "music", "sport", "happy", "startup" ]
 var eventName = ["Art Exhibition", "Tech Conference", "Music Festival", "Sports Tournament", "Happy Hour", "Startup Meetup" ]
 var clubName = ["Art Club", "Tech Club", "Music Club", "Sports Club", "Happy Club", "Startup Club" ]
@@ -13,6 +21,40 @@ var date = ["Feb 26 - 2:00 PM", "Mar 27 - 11:00 AM", "Apr 11 - 9:00 AM", "Apr 29
 var brief = ["Explore Students Art", "Join Us for a Tech Talk", "Enjoy a Music Festival", "Watch the Sports Tournament", "Enjoy a Happy Hour", "Join a Startup Meetup"]
 
 struct ContentView: View {
+    @StateObject private var auth = AuthViewModel()
+    var body: some View {
+        Group {
+            if auth.isAuthenticated {
+                TabView {
+                    NavigationStack {
+                        HomeView()
+                            .toolbar {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    Button("Logout") { auth.logout()}
+                                    }
+                                }
+                            }
+                    .tabItem {
+                        Image(systemName: "house")
+                        Text("Home")
+                    }
+                }
+                .tint(.black)
+                .ignoresSafeArea()
+            } else {
+                AuthView(auth: auth)
+            }
+        }
+    }
+}
+
+struct HomeView: View {
+    
+    @State private var description: [clubcard] = []
+    
+    init() {
+        _description = State(initialValue: performance())
+    }
     
     @State var isLiked: Bool = false
     @State var likeCount: Int = Int.random(in: 0...1000)
@@ -40,7 +82,7 @@ struct ContentView: View {
                                 .scaledToFit()
                                 .frame(height: 30)
                                 .foregroundStyle(Color.black)
-                        }.padding(EdgeInsets(top: 30, leading: 20, bottom: 0, trailing: 20))
+                        }.padding(EdgeInsets(top: 40, leading: 20, bottom: 0, trailing: 20))
                     }
                     ZStack {
                         Rectangle()
@@ -71,8 +113,8 @@ struct ContentView: View {
                         }
                     }
                     .padding(EdgeInsets(top: -15, leading: 0, bottom: -10, trailing: 0))
-                    List{
-                        ForEach(event.indices, id: \.self) { index in
+                    List {
+                        ForEach(description.indices, id: \.self) { index in
                             ZStack {
                                 Rectangle()
                                     .frame(height: 150)
@@ -80,7 +122,7 @@ struct ContentView: View {
                                     .foregroundStyle(Color.gray)
                                     .opacity(0.1)
                                 HStack {
-                                    Image("\(event[index])")
+                                    Image(description[index].name)
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: 100, height: 150)
@@ -105,13 +147,12 @@ struct ContentView: View {
                                                 .opacity(0.1)
                                             HStack {
                                                 Button {
-                                                    isLiked.toggle()
-                                                    likeCount += isLiked ? 1 : -1
+                                                    description[index].isliked.toggle()
                                                 } label: {
-                                                    Image(systemName: isLiked ? "heart.fill" : "heart")
+                                                    Image(systemName: description[index].isliked ? "heart.fill" : "heart")
                                                         .resizable()
                                                         .frame(width: 15, height: 15)
-                                                        .foregroundColor(isLiked ? .red: .black)
+                                                        .foregroundColor(description[index].isliked ? .red : .black)
                                                 }
                                                 Text("\(likeCount)")
                                                     .font(Font.system(size: 14, weight: .semibold))
@@ -125,7 +166,8 @@ struct ContentView: View {
                                     Spacer()
                                 }.cornerRadius(15)
                             }
-                        }.listRowSeparator(.hidden)
+                            .listRowSeparator(.hidden)
+                        }
                     }.listStyle(.plain)
                     ZStack {
                         Rectangle()
@@ -142,8 +184,17 @@ struct ContentView: View {
                     footerView()
                 }
                 .ignoresSafeArea()
-        }
+            }
     }
+    
+    func performance() -> [clubcard] {
+        var img: [clubcard] = []
+        for i in event {
+            img.append(clubcard(name: "\(i)", isliked: false))
+        }
+        return img
+    }
+    
 }
 
 struct footerView: View {

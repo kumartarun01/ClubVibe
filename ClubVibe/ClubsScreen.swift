@@ -29,7 +29,7 @@ struct ClubsScreen: View {
                             .font(.system(size: 24, weight: .bold))
                             .foregroundStyle(Color.black)
                         Spacer()
-                    }.padding(EdgeInsets(top: 30, leading: 20, bottom: 0, trailing: 20))
+                    }.padding(EdgeInsets(top: 40, leading: 20, bottom: 0, trailing: 20))
                 }
                 clubs()
                 Spacer()

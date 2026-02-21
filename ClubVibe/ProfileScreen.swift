@@ -31,7 +31,7 @@ struct ProfileScreen: View {
                             .scaledToFit()
                             .frame(height: 30)
                             .foregroundStyle(Color.black)
-                    }.padding(EdgeInsets(top: 30, leading: 20, bottom: 0, trailing: 20))
+                    }.padding(EdgeInsets(top: 40, leading: 20, bottom: 0, trailing: 20))
                 }
                 HStack(spacing: 20) {
                     Image("art")
@@ -42,7 +42,7 @@ struct ProfileScreen: View {
                         .overlay(RoundedRectangle(cornerRadius: 100).stroke(Color.black, lineWidth: 3))
                     VStack(alignment:.leading, spacing: 10) {
                         Text("Jonny")
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.system(size: 24, weight: .bold))
                         Text("jonny123@gmail.com")
                             .font(.system(size: 16, weight: .regular))
                     }

@@ -12,6 +12,7 @@ struct clubcard: Identifiable {
     var name: String
 //    var title: String
     var isliked: Bool
+    var likeCount: Int = 0
 }
 
 var event = ["art", "tech", "music", "sport", "happy", "startup" ]
@@ -25,20 +26,20 @@ struct ContentView: View {
     var body: some View {
         Group {
             if auth.isAuthenticated {
-                TabView {
+//                TabView {
                     NavigationStack {
                         HomeView()
-                            .toolbar {
-                                ToolbarItem(placement: .topBarTrailing) {
-                                    Button("Logout") { auth.logout()}
-                                    }
-                                }
+//                            .toolbar {
+//                                ToolbarItem(placement: .topBarTrailing) {
+//                                    Button("Logout") { auth.logout()}
+//                                    }
+//                                }
                             }
-                    .tabItem {
-                        Image(systemName: "house")
-                        Text("Home")
-                    }
-                }
+//                    .tabItem {
+//                        Image(systemName: "house")
+//                        Text("Home")
+//                    }
+//                }
                 .tint(.black)
                 .ignoresSafeArea()
             } else {
@@ -48,154 +49,6 @@ struct ContentView: View {
     }
 }
 
-struct HomeView: View {
-    
-    @State private var description: [clubcard] = []
-    
-    init() {
-        _description = State(initialValue: performance())
-    }
-    
-    @State var isLiked: Bool = false
-    @State var likeCount: Int = Int.random(in: 0...1000)
-    
-    var body: some View {
-            NavigationStack {
-                VStack {
-                    ZStack {
-                        Rectangle()
-                            .frame(height: 100)
-                            .foregroundStyle(Color(red: 170/255, green: 230/255, blue: 176/255))
-                        HStack {
-                            Image(systemName: "house.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 30)
-                                .foregroundStyle(Color.black)
-                            Spacer()
-                            Text("ClubVibe")
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundStyle(Color.black)
-                            Spacer()
-                            Image(systemName: "bell.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 30)
-                                .foregroundStyle(Color.black)
-                        }.padding(EdgeInsets(top: 40, leading: 20, bottom: 0, trailing: 20))
-                    }
-                    ZStack {
-                        Rectangle()
-                            .frame(height: 90)
-                            .foregroundStyle(Color.white)
-                        HStack {
-                            Spacer()
-                            ZStack {
-                                Rectangle()
-                                    .frame( height: 60)
-                                    .foregroundStyle(Color(red: 170/255, green: 230/255, blue: 176/255))
-                                    .cornerRadius(35)
-                                Text("Upcoming")
-                                    .font(Font.system(size: 18, weight: .bold))
-                                    .foregroundStyle(Color.black)
-                            }
-                            ZStack {
-                                Rectangle()
-                                    .frame( height: 60)
-                                    .foregroundStyle(Color.gray)
-                                    .opacity(0.2)
-                                    .cornerRadius(35)
-                                Text("Popular")
-                                    .font(Font.system(size: 18, weight: .bold))
-                                    .foregroundStyle(Color.black)
-                            }
-                            Spacer()
-                        }
-                    }
-                    .padding(EdgeInsets(top: -15, leading: 0, bottom: -10, trailing: 0))
-                    List {
-                        ForEach(description.indices, id: \.self) { index in
-                            ZStack {
-                                Rectangle()
-                                    .frame(height: 150)
-                                    .cornerRadius(15)
-                                    .foregroundStyle(Color.gray)
-                                    .opacity(0.1)
-                                HStack {
-                                    Image(description[index].name)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 100, height: 150)
-                                        .clipped()
-                                    VStack(alignment: .leading, spacing: 5) {
-                                        Text("\(eventName[index])")
-                                            .font(Font.system(size: 20, weight: .semibold))
-                                        Text("\(date[index])")
-                                            .font(Font.system(size: 14, weight: .regular))
-                                            .foregroundStyle(Color.gray)
-                                        Rectangle()
-                                            .frame(height: 1)
-                                            .foregroundStyle(Color.gray)
-                                        Text("\(brief[index])")
-                                            .font(Font.system(size: 14, weight: .regular))
-                                            .foregroundStyle(Color.gray)
-                                        ZStack {
-                                            Rectangle()
-                                                .frame(width:120, height: 30)
-                                                .cornerRadius(50)
-                                                .foregroundStyle(Color.gray)
-                                                .opacity(0.1)
-                                            HStack {
-                                                Button {
-                                                    description[index].isliked.toggle()
-                                                } label: {
-                                                    Image(systemName: description[index].isliked ? "heart.fill" : "heart")
-                                                        .resizable()
-                                                        .frame(width: 15, height: 15)
-                                                        .foregroundColor(description[index].isliked ? .red : .black)
-                                                }
-                                                Text("\(likeCount)")
-                                                    .font(Font.system(size: 14, weight: .semibold))
-                                                    .foregroundStyle(Color.black)
-                                                Text("Going")
-                                                    .font(Font.system(size: 14, weight: .semibold))
-                                                    .foregroundStyle(Color.black)
-                                            }
-                                        }
-                                    }.padding(10)
-                                    Spacer()
-                                }.cornerRadius(15)
-                            }
-                            .listRowSeparator(.hidden)
-                        }
-                    }.listStyle(.plain)
-                    ZStack {
-                        Rectangle()
-                            .frame(height: 1)
-                            .foregroundStyle(Color.black)
-                        Rectangle()
-                            .frame(width: 120,height: 40)
-                            .cornerRadius(40)
-                            .foregroundStyle(Color(red: 170/255, green: 230/255, blue: 176/255))
-                        Text("View All")
-                            .font(Font.system(size: 18, weight: .bold))
-                            .foregroundStyle(Color.black)
-                    }
-                    footerView()
-                }
-                .ignoresSafeArea()
-            }
-    }
-    
-    func performance() -> [clubcard] {
-        var img: [clubcard] = []
-        for i in event {
-            img.append(clubcard(name: "\(i)", isliked: false))
-        }
-        return img
-    }
-    
-}
 
 struct footerView: View {
     var body: some View {

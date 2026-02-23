@@ -19,11 +19,15 @@ struct ClubsScreen: View {
                         .frame(height: 100)
                         .foregroundStyle(Color(red: 170/255, green: 230/255, blue: 176/255))
                     HStack {
-                        Image(systemName: "chevron.left")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 30)
-                            .foregroundStyle(Color.black)
+                        NavigationLink{
+                            HomeView()
+                        }label: {
+                            Image(systemName: "chevron.left")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 30)
+                                .foregroundStyle(Color.black)
+                        }
                         Spacer()
                         Text("Clubs ")
                             .font(.system(size: 24, weight: .bold))
@@ -35,7 +39,7 @@ struct ClubsScreen: View {
                 Spacer()
                 footerView()
             }.ignoresSafeArea()
-        }
+        }.toolbar(.hidden)
     }
 }
 

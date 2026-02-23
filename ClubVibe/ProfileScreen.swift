@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ProfileScreen: View {
+    @ObservedObject private var auth = AuthViewModel()
     var body: some View {
         NavigationStack {
             VStack {
@@ -16,11 +17,11 @@ struct ProfileScreen: View {
                         .frame(height: 100)
                         .foregroundStyle(Color(red: 170/255, green: 230/255, blue: 176/255))
                     HStack {
-                        Image(systemName: "chevron.left")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 30)
-                            .foregroundStyle(Color.black)
+//                        Image(systemName: "chevron.left")
+//                            .resizable()
+//                            .scaledToFit()
+//                            .frame(height: 30)
+//                            .foregroundStyle(Color.black)
                         Spacer()
                         Text("Profile")
                             .font(.system(size: 24, weight: .bold))
@@ -52,7 +53,7 @@ struct ProfileScreen: View {
                     .frame(height: 1)
                     .foregroundStyle(Color.gray)
                     .opacity(0.4)
-                List{
+                ScrollView {
                     ForEach(event.indices, id: \.self) { index in
                         ZStack {
                             Rectangle()
@@ -60,7 +61,7 @@ struct ProfileScreen: View {
                                 .cornerRadius(15)
                                 .foregroundStyle(Color.gray)
                                 .opacity(0.1)
-                            HStack {
+                            HStack(spacing: 20) {
                                 Image("\(event[index])")
                                     .resizable()
                                     .scaledToFill()
@@ -75,19 +76,32 @@ struct ProfileScreen: View {
                                         Text("Member")
                                             .font(Font.system(size: 14, weight: .regular))
                                             .foregroundStyle(Color.gray)
-                                        
-                                        
-                                    }.padding(10)
+                                    }
                                 }
                                 Spacer()
                             }.cornerRadius(15)
                         }
-                    }.listRowSeparator(.hidden)
-                }.listStyle(.plain)
+                    }.padding(EdgeInsets(top: 5, leading: 15, bottom: 0, trailing: 15))
+                    Button(action: {
+                        auth.logout()
+                    }){
+                        NavigationLink {
+                            ContentView()
+                        }label: {
+                            Text("Log Out \(Image(systemName: "rectangle.portrait.and.arrow.right"))")
+                                .foregroundStyle(Color.white)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.black)
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                .padding()
+                        }
+                    }
+                }
                 Spacer()
                 footerView()
             }.ignoresSafeArea()
-        }
+        }.toolbar(.hidden)
         
     }
 }

@@ -7,65 +7,81 @@
 
 import SwiftUI
 import Combine
+import Firebase
+import FirebaseAuth
+import FirebaseFirestore
 
 final class AuthViewModel: ObservableObject {
-    
     @Published var isAuthenticated: Bool = false
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-    
-    private var users: [String: String] = [:]
+   
+    private let db = Firestore.firestore()
     
     func login(email: String, password: String) {
-        isLoading = true
-        errorMessage = nil
+            errorMessage = nil
+            isLoading = true
+            
+            Auth.auth().signIn(withEmail: email, password: password) { result, error in
+                
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                    
+                    if let error = error {
+                        self.errorMessage = error.localizedDescription
+                        return
+                    }
+                    
+                    self.isAuthenticated = true
+                }
+            }
+        }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            guard let self else { return }
-            self.isLoading = false
+        // MARK: SIGNUP
+        func signup(email: String, password: String, username: String) {
             
-            if email.isEmpty || password.isEmpty {
-                self.errorMessage = "Please fill in all fields"
-                return
+            errorMessage = nil
+            isLoading = true
+            
+            Auth.auth().createUser(withEmail: email, password: password) { result, error in
+                
+                if let error = error {
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        self.errorMessage = error.localizedDescription
+                    }
+                    return
+                }
+                
+                guard let uid = result?.user.uid else { return }
+                
+                // Save extra data to Firestore
+                self.db.collection("users").document(uid).setData([
+                    "uid": uid,
+                    "username": username,
+                    "email": email,
+                    "createdAt": Timestamp()
+                ]) { error in
+                    
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        
+                        if let error = error {
+                            self.errorMessage = error.localizedDescription
+                        } else {
+                            self.isAuthenticated = false
+                        }
+                    }
+                }
             }
-            
-            guard let savedPassword = self.users[email] else {
-                self.errorMessage = "No account found for this email. Please sign up."
-                return
-            }
-            
-            guard password == savedPassword else {
-                self.errorMessage = "Password is incorrect."
-                return
-            }
-            
-            self.isAuthenticated = true
-            self.errorMessage = nil
+        }
+        
+        // MARK: LOGOUT
+        func logout() {
+            try? Auth.auth().signOut()
+            isAuthenticated = false
         }
     }
-    
-    func signUp(email: String, password: String, username: String) {
-        errorMessage = nil
-        isLoading = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            guard let self else { return }
-            self.isLoading = false
-            
-            if email.isEmpty || password.isEmpty || username.isEmpty {
-                self.errorMessage = "Please fill in all fields"
-                return
-            }
-            
-            self.users[email] = password
-            
-            self.errorMessage = nil
-            self.isAuthenticated = true
-        }
-    }
-    func logout() {
-        isAuthenticated = false
-    }
-}
 
 struct AuthView: View {
     @ObservedObject var auth: AuthViewModel
@@ -202,7 +218,7 @@ struct SignUpPage: View {
                     .textFieldStyle(.roundedBorder)
                 SecureField("Password", text: $password)
                     .textFieldStyle(.roundedBorder)
-                Button(action: { auth.signUp(email: email, password: password, username: username) }) {
+                Button(action: { auth.signup(email: email, password: password, username: username) }) {
                     Text("Create Account")
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -274,6 +290,5 @@ struct ForgotPassword: View {
 }
 
 #Preview {
-    ForgotPassword()
-//    AuthView(auth:  AuthViewModel())
+    AuthView(auth: AuthViewModel())
 }

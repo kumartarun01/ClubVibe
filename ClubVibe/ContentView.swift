@@ -22,7 +22,10 @@ var date = ["Feb 26 - 2:00 PM", "Mar 27 - 11:00 AM", "Apr 11 - 9:00 AM", "Apr 29
 var brief = ["Explore Students Art", "Join Us for a Tech Talk", "Enjoy a Music Festival", "Watch the Sports Tournament", "Enjoy a Happy Hour", "Join a Startup Meetup"]
 
 struct ContentView: View {
-    @StateObject private var auth = AuthViewModel()
+    
+    @EnvironmentObject var auth: AuthViewModel
+//    @EnvironmentObject var auth = AuthViewModel()
+//    @StateObject private var auth = AuthViewModel()
     var body: some View {
         Group {
             if auth.isAuthenticated {
@@ -105,6 +108,9 @@ struct footerView: View {
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .environmentObject(AuthViewModel())
+    }
 }

@@ -202,7 +202,6 @@ struct BottomSection: View {
 
 struct SignUpPage: View {
     @ObservedObject var auth: AuthViewModel
-//    private var isLoading: Bool { auth.isLoading }
     @State private var username: String = ""
     @State private var email: String = ""
     @State private var password: String = ""
